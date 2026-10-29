@@ -1,1 +1,79 @@
 run,prompt,model,version,timestamp,output,verified,notes
+1,"Based on these photography bookings, give me a formula I can paste into google sheets that counts the number of bookings that were weddings that occured in the summer season, including both primary and second shot weddings.",Gemini,3.8 Flash,"Oct 28, 6:19 PM","To count the weddings (both primary and second shoot) that occurred during the summer season, here are the formulas depending on whether you define summer meteorologically (June, July, August) or astronomically (late June through late September), and based on your table layout:
+
+### 1. Standard Meteorological Summer (June, July, August)
+
+In your sheet, the columns are organized as:
+* **Column D**: `Shoot Date` (e.g., `""June 27 / 2-9pm""`, `""Aug 16 / 1-9pm""`)
+* **Column E**: `Type` (e.g., `WEDDING`, `SECOND`)
+* **Column F**: `Details` (e.g., `""wedding second shoot...""`)
+```excel
+=COUNTIFS(
+  ARRAYFORMULA(REGEXMATCH(D2:D, ""(?i)June|July|Aug"")), TRUE,
+  ARRAYFORMULA(REGEXMATCH(E2:E & "" "" & F2:F, ""(?i)wedding"")), TRUE
+)
+
+### 2. General / Flexible Formula using `QUERY` or `FILTER`
+If your dates are plain text containing the shoot date and time in Column D, `COUNTA` combined with `FILTER` matches any row where:
+
+1. The **Type** or **Details** mentions `""wedding""`.
+2. The **Shoot Date** falls in the summer months (June, July, August, or September).
+
+```excel
+=COUNTA(IFERROR(FILTER(D2:D, 
+  REGEXMATCH(D2:D, ""(?i)June|July|Aug""), 
+  REGEXMATCH(E2:E & "" "" & F2:F, ""(?i)wedding"")
+)))
+
+(Note: If you consider astronomical summer to include September weddings such as the ones on Sep 5 and Sep 26, change `""June|July|Aug""` to `""June|July|Aug|Sep""`.)
+### Matches Found in the Data:
+* **Meteorological Summer (June – August)**: **3** bookings
+* June 27: Elizabeth & Hugo (`SECOND` / wedding second shoot)
+* July 10: Kaitlyn & Adam Dill (`SECOND` / coverage for Noelle Kaley)
+* August 16: Tiphanie Leung & Timothy Cheung (`WEDDING`)
+* **Astronomical Summer (Late June – Late September)**: **5** bookings
+* The 3 above, plus September 5 (Jennifer Chin & Chris Ho) and September 26 (Diana Espino & Elvis Garcia).",Incorrect,"Answer is 3, given formula gave 2"
+2,"Based on these photography bookings, give me a formula I can paste into google sheets that counts the number of bookings that were weddings that occured in the summer season, including both primary and second shot weddings.",Gemini,3.8 Flash,6:21 PM,"```excel
+=COUNTIFS(
+  ARRAYFORMULA(REGEXMATCH(D2:D, ""(?i)June|July|Aug"")), TRUE,
+  ARRAYFORMULA(REGEXMATCH(E2:E & "" "" & F2:F, ""(?i)wedding"")), TRUE
+)
+### How it works:
+* **`D2:D` (Shoot Date)**: Checks for dates falling in **June**, **July**, or **August**.
+* **`E2:E & "" "" & F2:F` (Type & Details)**: Checks both the **Type** column (which has `WEDDING` for primary weddings and `SECOND` for second shoots) and the **Details** column (which clarifies `""wedding second shoot""`) for the word `""wedding""`.
+
+### Alternative: Flexible `COUNTA(FILTER(...))` Formula
+If you prefer using `FILTER`:
+```excel
+=COUNTA(IFERROR(FILTER(D2:D, 
+  REGEXMATCH(D2:D, ""(?i)June|July|Aug""), 
+  REGEXMATCH(E2:E & "" "" & F2:F, ""(?i)wedding"")
+)))
+(Note: If you follow astronomical summer and want to include late September weddings—such as Sep 5 and Sep 26—replace `June|July|Aug` with `June|July|Aug|Sep`.)",Incorrect,"Answer is 3, given formula gave 2"
+3,"Based on these photography bookings, give me a formula I can paste into google sheets that counts the number of bookings that were weddings that occured in the summer season, including both primary and second shot weddings.",Gemini,3.8 Flash,6:22 PM,"```excel
+=COUNTIF(
+  FILTER(
+    D2:D,
+    REGEXMATCH(D2:D, ""(?i)June|July|Aug""),
+    REGEXMATCH(E2:E & "" "" & F2:F, ""(?i)wedding"")
+  ),
+  ""<>""
+)
+### Formula Details
+* **`D2:D` (Shoot Date)**: Scans the date string for `June`, `July`, or `Aug`.
+* **`E2:E & "" "" & F2:F` (Type & Details)**: Combines the **Type** column (which flags primary weddings as `WEDDING` and second shoots as `SECOND`) with the **Details** column (which identifies them with `""wedding second shoot""`) to match any row containing `""wedding""`.
+
+* **Meteorological vs. Astronomical Summer**: If you define the summer season astronomically to include September weddings (such as September 5 and September 26), change `""June|July|Aug""` to `""June|July|Aug|Sep""`.",Incorrect,"Answer is 3, given formula gave 2"
+4,"Based on these photography bookings, give me a formula I can paste into google sheets that counts the number of bookings that were weddings that occured in the summer season, including both primary and second shot weddings.",Claude,Opus 5.5,"Oct 28, 6:24 PM","I'll open the bookings file to see how it's laid out.
+
+Paste this into any empty cell:
+=SUM(COUNTIFS(E:E, {""WEDDING"",""SECOND""}, D:D, {""Jun*"";""Jul*"";""Aug*""}))
+
+**Result: 3**
+- **Iris Kim:** second shoot, June 27
+- **Noelle Kaley:** second shoot, July 10
+- **Tiphanie Leung:** wedding, August 16
+
+Your Shoot Date column holds text like ""June 27 / 2-9pm"", not real dates. So the formula matches on the first letters of the month name instead of reading a date. It checks the Type column (E) for either WEDDING or SECOND, and the Shoot Date column (D) for anything starting with Jun, Jul or Aug. It assumes the columns stay in the same order as your Numbers file (D = Shoot Date, E = Type) once you bring the sheet into Google Sheets.
+
+I counted summer as June through August. If you go by the calendar season (June 21 to September 22) instead, Jennifer Chin's wedding on September 5 also counts, and the total is 4.",Incorrect,"Answer is 3, given formula gave 0"
