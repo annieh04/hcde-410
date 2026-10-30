@@ -77,3 +77,64 @@ Paste this into any empty cell:
 Your Shoot Date column holds text like ""June 27 / 2-9pm"", not real dates. So the formula matches on the first letters of the month name instead of reading a date. It checks the Type column (E) for either WEDDING or SECOND, and the Shoot Date column (D) for anything starting with Jun, Jul or Aug. It assumes the columns stay in the same order as your Numbers file (D = Shoot Date, E = Type) once you bring the sheet into Google Sheets.
 
 I counted summer as June through August. If you go by the calendar season (June 21 to September 22) instead, Jennifer Chin's wedding on September 5 also counts, and the total is 4.",Incorrect,"Answer is 3, given formula gave 0"
+5,"Based on these photography bookings, give me a formula I can paste into google sheets that counts the number of bookings that were weddings that occured in the summer season, including both primary and second shot weddings.",Gemini,3.8 Flash,"Oct 30, 4:12 PM","In your bookings table, shoot dates are stored in **Column E** (e.g., `June 27 / 2-9pm`), shoot types are in **Column F** (e.g., `WEDDING` or `SECOND`), and details are in **Column G**. Because the dates and types are mixed text strings, you can use `COUNTIF` or `SUMPRODUCT` with wildcard and regex matching.
+
+Depending on whether you define summer meteorologically (June 1 – August 31) or astronomically (June 21 – September 22), use the corresponding formula below:
+
+### 1. Meteorological Summer (June 1 – August 31)
+
+Counts any booking containing `June`, `July`, or `August` where either the **Type** (Column F) contains `WEDD` or `SECOND`, or the **Details** (Column G) mention a wedding:
+
+```excel
+=SUMPRODUCT(
+  REGEXMATCH(E2:E, ""(?i)June|July|Aug""),
+  REGEXMATCH(F2:F, ""(?i)WEDD|SECOND"") + REGEXMATCH(G2:G, ""(?i)wedding"") > 0
+)
+
+```
+
+**Matching Bookings (3 total):**
+
+* **June 27:** Elizabeth & Hugo — *SECOND / wedding second shoot*
+
+
+* **July 10:** Kaitlyn & Adam Dill — *coverage / second shoot for Noelle Kaley*
+
+
+* **August 16:** Tiphanie Leung & Timothy Cheung — *WEDDING / Liljebeck Farms*
+
+
+
+---
+
+### 2. Astronomical Summer (June 21 – September 22)
+
+If your summer season extends through mid-September (capturing September weddings before the autumn equinox):
+
+```excel
+=SUMPRODUCT(
+  (
+    REGEXMATCH(E2:E, ""(?i)June (2[1-9]|30)|July|Aug|Sep(t)? (0?[1-9]|1[0-9]|2[0-2])\b"")
+  ) * (
+    REGEXMATCH(F2:F, ""(?i)WEDD|SECOND"") + REGEXMATCH(G2:G, ""(?i)wedding"") > 0
+  )
+)
+
+```
+
+**Matching Bookings (4 total):**
+
+* **June 27:** Elizabeth & Hugo — *SECOND / wedding second shoot*
+
+
+* **July 10:** Kaitlyn & Adam Dill — *coverage / second shoot for Noelle Kaley*
+
+
+* **August 16:** Tiphanie Leung & Timothy Cheung — *WEDDING / Liljebeck Farms*
+
+
+* **September 5:** Jennifer Chin & Chris Ho — *WEDDING / Pine Creek Nursery*
+
+
+
+*(Note: Adjust the range `E2:E`, `F2:F`, and `G2:G` if your sheet starts on a row other than row 2.)*",Unverified,User chose to follow up with a different prompt to generate the answer

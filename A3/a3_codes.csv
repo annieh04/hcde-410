@@ -1,1 +1,5 @@
 observation,theme
+"After Gemini’s first response, the user wanted the exact answer rather than a formula. The user cared about the result, not the process. ",Preference for answers over methods
+"In the second prompt, the user asked “Can you directly access my photo file and just tell me…”. The phrasing of the prompt as a question might suggest that the user is unsure of the AI's ability to read the provided data. When Gemini delivered, that confirmed or built a mental model of the tool as able to operate on their data.",Assumptions about access
+"The user defined summer as “June to September” rather than leaving it for Gemini to figure out. In my runs, Gemini defaulted to June–August, which produced a different correct answer. The user resolved the ambiguity themselves, without realizing the model had a different default. ",Clarifying ambiguous criteria
+"The user checked the spreadsheet manually after getting the answer. Even a confident, correct answer didn’t earn full trust right away. The user still treated AI output as something to check, especially for a concrete, checkable fact. ",Manual verification
